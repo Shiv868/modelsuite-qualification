@@ -31,6 +31,31 @@ const fmtDate = (raw) => {
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   } catch { return raw; }
 };
+const getDueBadge = (dueDate) => {
+  if (!dueDate) return null;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const due = new Date(dueDate);
+  due.setHours(0, 0, 0, 0);
+
+  if (due < today) {
+    return {
+      text: "Overdue",
+      className: "bg-red-500/15 text-red-400",
+    };
+  }
+
+  if (due.getTime() === today.getTime()) {
+    return {
+      text: "Due Soon",
+      className: "bg-yellow-500/15 text-yellow-400",
+    };
+  }
+
+  return null;
+};
 
 /* ── Status badge class ── */
 const STATUS_CLASS = {
@@ -126,8 +151,27 @@ const TasksTable = ({ tasks, onEdit, onRefresh }) => {
               </td>
 
               {/* Due date */}
-              <td className="table-td" style={{ color: '#6B7280', whiteSpace: 'nowrap' }}>
-                {fmtDate(task.dueDate)}
+              <td className="table-td">
+                {(() => {
+                  const dueBadge = getDueBadge(task.dueDate);
+
+                  return (
+                    <div className="flex flex-col gap-1">
+                      <span style={{ color: '#6B7280', whiteSpace: 'nowrap' }}>
+                        {fmtDate(task.dueDate)}
+                      </span>
+
+                      {dueBadge && (
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${dueBadge.className}`}
+                          style={{ width: 'fit-content' }}
+                        >
+                          {dueBadge.text}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
               </td>
 
               {/* Created */}

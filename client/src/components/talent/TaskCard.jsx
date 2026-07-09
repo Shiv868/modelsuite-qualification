@@ -7,9 +7,48 @@ const STATUS_CLASS = {
   Approved:  'status-badge-Approved',
   Rejected:  'status-badge-Rejected',
 };
+const fmtDate = (raw) => {
+  if (!raw) return 'No due date';
+
+  const d = new Date(raw);
+
+  return d.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};
+
+const getDueBadge = (dueDate) => {
+  if (!dueDate) return null;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const due = new Date(dueDate);
+  due.setHours(0, 0, 0, 0);
+
+  if (due < today) {
+    return {
+      text: 'Overdue',
+      className: 'bg-red-500/15 text-red-400',
+    };
+  }
+
+  if (due.getTime() === today.getTime()) {
+    return {
+      text: 'Due Soon',
+      className: 'bg-yellow-500/15 text-yellow-400',
+    };
+  }
+
+  return null;
+};
+
+
 
 const TaskCard = ({ task, showClaimButton = false, onClaimed }) => {
-
+  const dueBadge = getDueBadge(task.dueDate);
   const handleClaim = async () => {
     try {
       await claimTask(task._id);
@@ -40,9 +79,19 @@ const TaskCard = ({ task, showClaimButton = false, onClaimed }) => {
       {/* Meta row */}
       <div className="flex items-center justify-between flex-wrap gap-2 mt-auto">
         
+      <div className="flex flex-col">
         <span className="text-[12px] text-text-faint">
-          {task.dueDate ? `Due: ${task.dueDate}` : 'No due date'}
+          Due: {fmtDate(task.dueDate)}
         </span>
+
+        {dueBadge && (
+          <span
+            className={`mt-1 inline-block w-fit rounded-full px-2 py-0.5 text-[10px] font-semibold ${dueBadge.className}`}
+          >
+            {dueBadge.text}
+          </span>
+        )}
+      </div>
         {task.createdBy?.name && (
           <span className="text-[12px] text-text-faint">By {task.createdBy.name}</span>
         )}

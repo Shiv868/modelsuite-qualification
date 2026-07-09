@@ -35,6 +35,22 @@ const fmtDate = (raw) => {
   } catch { return raw; }
 };
 
+const isOverdue = (dueDate) => {
+  if (!dueDate) return false;
+  return new Date(dueDate) < new Date();
+};
+
+const isDueSoon = (dueDate) => {
+  if (!dueDate) return false;
+
+  const now = new Date();
+  const due = new Date(dueDate);
+
+  const hoursLeft = (due - now) / (1000 * 60 * 60);
+
+  return hoursLeft > 0 && hoursLeft <= 24;
+};
+
 const MyTasksList = ({ tasks, onRefresh }) => {
   const [submitTarget, setSubmitTarget] = useState(null);
 
@@ -73,10 +89,41 @@ const MyTasksList = ({ tasks, onRefresh }) => {
                 {task.title || 'Untitled Task'}
               </p>
               {fmtDate(task.dueDate) && (
-                <p className="flex items-center gap-1.5 text-[11.5px]" style={{ color: '#4B5563' }}>
-                  <IconCalendar />
-                  Due {fmtDate(task.dueDate)}
-                </p>
+                <div>
+                    <p
+                      className="flex items-center gap-1.5 text-[11.5px]"
+                      style={{ color: '#4B5563' }}
+                    >
+                      <IconCalendar />
+                      Due {fmtDate(task.dueDate)}
+                    </p>
+
+                    <div className="flex gap-2 mt-1">
+                      {isOverdue(task.dueDate) && (
+                        <span
+                          className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                          style={{
+                            background: '#DC2626',
+                            color: '#fff',
+                          }}
+                        >
+                          Overdue
+                        </span>
+                      )}
+
+                      {isDueSoon(task.dueDate) && (
+                        <span
+                          className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                          style={{
+                            background: '#FACC15',
+                            color: '#000',
+                          }}
+                        >
+                          Due Soon
+                        </span>
+                      )}
+                    </div>
+                  </div>
               )}
             </div>
 
