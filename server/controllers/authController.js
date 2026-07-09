@@ -1,8 +1,13 @@
 ﻿const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const BlacklistedToken = require('../models/BlacklistedToken');
 const generateToken = (id, role) => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+};
+const getTokenExpiry = (token) => {
+  const decoded = jwt.decode(token);
+  return new Date(decoded.exp * 1000);
 };
 
 // @desc  Register a new user
@@ -61,5 +66,32 @@ const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const logoutUser = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
 
-module.exports = { registerUser, loginUser };
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(400).json({
+        message: 'No token provided',
+      });
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    await BlacklistedToken.create({
+      token,
+      expiresAt: getTokenExpiry(token),
+    });
+
+    return res.json({
+      message: 'Logged out successfully',
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+
+module.exports = { registerUser, loginUser, logoutUser };
