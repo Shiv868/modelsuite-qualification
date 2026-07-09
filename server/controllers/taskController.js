@@ -40,10 +40,24 @@ const getTaskById = async (req, res) => {
 const createTask = async (req, res) => {
   const { title, description, status, assignedTo, dueDate } = req.body;
 
+  // Validate required fields
+  if (
+    !title ||
+    typeof title !== "string" ||
+    title.trim() === "" ||
+    !description ||
+    typeof description !== "string" ||
+    description.trim() === ""
+  ) {
+    return res.status(400).json({
+      message: "Title and description are required.",
+    });
+  }
+
   try {
     const task = await Task.create({
-      title,
-      description,
+      title: title.trim(),
+      description: description.trim(),
       status,
       assignedTo: assignedTo || null,
       dueDate,
