@@ -1,5 +1,5 @@
 import { deleteTask } from '../../api/tasks';
-
+import Avatar from '../common/Avatar';
 /* ── SVG Action Icons ── */
 const IconEdit = () => (
   <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -12,15 +12,6 @@ const IconDelete = () => (
     <path d="M3 6h14M8 6V4a1 1 0 011-1h2a1 1 0 011 1v2M17 6l-1 12a2 2 0 01-2 2H6a2 2 0 01-2-2L3 6M9 10v5M11 10v5"/>
   </svg>
 );
-
-/* ── Avatar color map ── */
-const AVATAR_COLORS = [
-  'linear-gradient(135deg,#3B82F6,#2563EB)',
-  'linear-gradient(135deg,#8B5CF6,#7C3AED)',
-  'linear-gradient(135deg,#10B981,#059669)',
-  'linear-gradient(135deg,#F59E0B,#D97706)',
-];
-const getAvatarGradient = (name = '') => AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length];
 
 /* ── Date formatter ── */
 const fmtDate = (raw) => {
@@ -134,15 +125,10 @@ const TasksTable = ({ tasks, onEdit, onRefresh }) => {
               <td className="table-td" style={{ whiteSpace: 'nowrap' }}>
                 {task.assignedTo ? (
                   <div className="flex items-center gap-2">
-                    <div
-                      className="flex items-center justify-center text-[11px] font-bold text-white shrink-0"
-                      style={{
-                        width: '26px', height: '26px', borderRadius: '50%',
-                        background: getAvatarGradient(task.assignedTo.name || ''),
-                        fontFamily: 'Inter, sans-serif',
-                      }}>
-                      {task.assignedTo.name?.[0]?.toUpperCase()}
-                    </div>
+                    <Avatar
+                      name={task.assignedTo.name}
+                      size={26}
+                    />
                     <span style={{ color: '#E5E2E1' }}>{task.assignedTo.name}</span>
                   </div>
                 ) : (
