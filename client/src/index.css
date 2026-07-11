@@ -466,11 +466,12 @@ input, select, textarea {
   border: none;
   color: #4B5563;
   cursor: pointer;
-  padding: 6px;
-  border-radius: 7px;
+  padding: 8px 12px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap:8px;
   transition: color 0.15s ease-out, background 0.15s ease-out;
 }
 .logout-btn:hover {

@@ -86,12 +86,17 @@ const TalentSidebar = () => {
             </div>
           </div>
 
-          <button
-            onClick={() => { logout(); navigate('/login'); }}
-            title="Sign out"
-            className="logout-btn">
-            <IconLogout />
-          </button>
+            <button
+              onClick={() => {
+                logout();
+                navigate('/login');
+              }}
+              title="Logout"
+              className="logout-btn flex items-center gap-2"
+            >
+              <IconLogout />
+              <span>Logout</span>
+            </button>
         </div>
       </div>
     </aside>
